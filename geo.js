@@ -1,3 +1,4 @@
+
 function initMap() {
   // The location of Csub
   const csub = { lat: 35.3503, lng: -119.1025 };
@@ -11,6 +12,19 @@ function initMap() {
     position: csub,
     map: map,
   });
+
+  const locationButton = document.createElement("button");
+  locationButton.textContent = "Move to current location";
+  locationButton.classList.add("custom-map-control-button");
+  map.controls[google.maps.ControlPosition.TOP_CENTER].push(locationButton);
+
+  locationButton.addEventListener("click", () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function (position) {
+          map.panTo({lat: position.coords.latitude, lng: position.coords.longitude});
+        })
+    }
+  })
 }
 
 window.initMap = initMap;
