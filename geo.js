@@ -25,6 +25,15 @@ function initMap() {
         })
     }
   })
+  
+  const csubButton = document.createElement("button");
+  csubButton.textContent = "Move to campus";
+  csubButton.classList.add("custom-map-control-button");
+  map.controls[google.maps.ControlPosition.TOP_CENTER].push(csubButton);
+
+  csubButton.addEventListener("click", () => {
+    map.panTo(csub);
+  })
 }
 
 window.initMap = initMap;
