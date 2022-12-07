@@ -13,6 +13,11 @@
     <script defer
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAa4pcAIYxHl4-P_fM-25lQMJIn9kSQkFU&callback=initMap">
     </script>
+
+    <!--<button onclick="foo()">Test</button>
+    <p id="coords"></p>
+    -->
+
     <script src="geo.js"></script>
   </body>
   
