@@ -1,4 +1,5 @@
-
+// Map Reference:
+// https://developers.google.com/maps/documentation/javascript/overview#maps_map_simple-javascript
 function initMap() {
   // The location of Csub
   const csub = { lat: 35.3503, lng: -119.1025 };
