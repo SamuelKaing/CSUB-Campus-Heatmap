@@ -18,7 +18,7 @@
     <p id="coords"></p>
     -->
 
-    <script src="geo.js"></script>
+    <script src="js/geo.js"></script>
   </body>
   
 </html>
