@@ -1,0 +1,14 @@
+#map {
+    height: 80%;
+  }
+  /* 
+    Fills entire Screen with Map. (Can Change Later) 
+  */
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    
+    

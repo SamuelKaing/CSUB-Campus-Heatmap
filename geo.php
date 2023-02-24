@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="css/geo.css">
+    <link rel="stylesheet" href="geo.css">
     <title>Home</title>
   </head>
   <body>
@@ -18,7 +18,7 @@
     <p id="coords"></p>
     -->
 
-    <script src="js/geo.js"></script>
+    <script src="geo.js"></script>
   </body>
   
 </html>
