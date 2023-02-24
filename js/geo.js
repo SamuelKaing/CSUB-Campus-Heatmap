@@ -34,6 +34,30 @@ function initMap() {
   csubButton.addEventListener("click", () => {
     map.panTo(csub);
   })
+  
+  var heatmapCoords = [
+    {location: new google.maps.LatLng(35.3470426, -119.1031204), weight: 3},
+    {location: new google.maps.LatLng(35.3470426, -119.1016183), weight: 3},
+    {location: new google.maps.LatLng(35.3451703, -119.1031204), weight: 3},
+    {location: new google.maps.LatLng(35.3451703, -119.1016499), weight: 3}
+  ];
+
+
+  var heatmap = new google.maps.visualization.HeatmapLayer({
+    data: heatmapCoords,
+    map: map
+  });
+
+  /*heatmap.set('gradient', [
+    'rgba(0, 255, 255, 0)',
+    'rgba(0, 63, 255, 1)',
+    'rgba(0, 191, 255, 1)',
+    'rgba(0, 127, 255, 1)'
+  ])
+  
+  heatmap.set('opacity', 0.8);
+  heatmap.set('radius', 20);
+  */ 
 }
 
 window.initMap = initMap;
