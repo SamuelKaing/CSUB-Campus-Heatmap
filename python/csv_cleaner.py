@@ -42,7 +42,7 @@ for row in df.itertuples():
             days.append(True)
 
     class_query = """INSERT INTO Classes (ClassID, ClassNumber, TotalEnrolled, StartDate, EndDate, StartTime, EndTime, Mon, Tues, Wed, Thur, Fri) 
-    VALUES ({}, {}, {}, '{}', '{}', '{}', '{}', {}, {}, {}, {}, {});\n""".format(row[0], row[1], row[2], row[3], row[4], row[5], row[6], days[0], days[1], days[2], days[3], days[4])
+    VALUES ({}, {}, {}, STR_TO_DATE('{}', '%m/%d/%Y'), STR_TO_DATE('{}', '%m/%d/%Y'), STR_TO_DATE('{}', '%h:%i:%s %p'), STR_TO_DATE('{}', '%h:%i:%s %p'), {}, {}, {}, {}, {});\n""".format(row[0], row[1], row[2], row[3], row[4], row[5], row[6], days[0], days[1], days[2], days[3], days[4])
     class_inserts += class_query
     
     # only adds unique buildings
