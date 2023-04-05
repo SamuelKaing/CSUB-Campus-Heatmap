@@ -36,28 +36,31 @@ function initMap() {
   })
   
   var heatmapCoords = [
-    {location: new google.maps.LatLng(35.3470426, -119.1031204), weight: 3},
-    {location: new google.maps.LatLng(35.3470426, -119.1016183), weight: 3},
+    {location: new google.maps.LatLng(35.3470426, -119.1031204), weight: 10},
+    {location: new google.maps.LatLng(35.3470426, -119.1016183), weight: 5},
     {location: new google.maps.LatLng(35.3451703, -119.1031204), weight: 3},
-    {location: new google.maps.LatLng(35.3451703, -119.1016499), weight: 3}
+    {location: new google.maps.LatLng(35.3451703, -119.1016499), weight: 1},
+    {location: new google.maps.LatLng(35.34905, -119.103735), weight: 1} // SCI III
   ];
 
+  var heatmapColors = [
+    'rgba(0, 0, 0, 0)',
+    'rgba(255,243,59, 1)',
+    'rgba(253,199,12, 1)',
+    'rgba(243,144,63, 1)',
+    'rgba(237,104,60, 1)',
+    'rgba(233,62,58, 1)'
+  ];
 
   var heatmap = new google.maps.visualization.HeatmapLayer({
     data: heatmapCoords,
-    map: map
+    map: map,
+    radius: 50,
+    gradient: heatmapColors,
+    maxIntensity: 10
   });
 
-  /*heatmap.set('gradient', [
-    'rgba(0, 255, 255, 0)',
-    'rgba(0, 63, 255, 1)',
-    'rgba(0, 191, 255, 1)',
-    'rgba(0, 127, 255, 1)'
-  ])
   
-  heatmap.set('opacity', 0.8);
-  heatmap.set('radius', 20);
-  */ 
 }
 
 window.initMap = initMap;
