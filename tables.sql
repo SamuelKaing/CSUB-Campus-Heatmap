@@ -14,11 +14,11 @@ CREATE TABLE Classes (
     StartDate date not null,
     EndDate date not null,
     TotalEnrolled integer not null,
-    Mon boolean not null,
-    Tues boolean not null,
-    Wed boolean not null,
-    Thur boolean not null,
-    Fri boolean not null,
+    Monday boolean not null,
+    Tuesday boolean not null,
+    Wednesday boolean not null,
+    Thursday boolean not null,
+    Friday boolean not null,
     primary key (ClassID, ClassNumber)
 );
 
