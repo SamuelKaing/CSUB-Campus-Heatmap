@@ -22,18 +22,46 @@
         return $connection;
     }
 
+    $time = NULL;
+
     if (isset($_POST) && !empty($_POST)) { 
         if (isset($_POST['myRange']) && !empty($_POST['myRange'])) {
             $time = $_POST['myRange'];
+            $time = strtotime($time . ':00:00');
+            $time = date('H:i:s', $time);  // Date and Time are Different (can it be compared with date types instead of time types), putting single quotes solve it
             echo "Selected Time: " . $time;
         }
     }
-    // Hypothetical
-    // Grab button clicked from user
+    // Gets today's date in string form like "Monday", "Tuesday".
     $Day = date('l');
-    $select = "SELECT * FROM Classes WHERE ". $Day . "= 1";
-    $query = $db->prepare($select);
-    // get current date, add parameter
+
+    $sum = NULL;
+    $totalPop = NULL;
+
+    if ($db->query("CREATE TEMPORARY TABLE SCI (select ClassNumber from Inside where BuildingID = (select BuildingID from Buildings where BuildingName = 'SCI III'))") === TRUE) {
+      // Grabs TotalEnrolled in the Building between a certain time
+      $query = $db->prepare("SELECT SUM(TotalEnrolled) FROM Classes WHERE ($Day = 1 ) AND (ClassNumber IN (SELECT * FROM SCI)) AND ('$time' >= StartTime) AND ('$time' <= EndTime)");
+      $query->execute();
+      $result = $query->get_result();
+      $row = mysqli_fetch_row($result);
+      $sum = $row[0];
+
+      // Query Grabs Total Enrolled in the Building
+      $query = $db->prepare("SELECT SUM(TotalEnrolled) FROM Classes WHERE ($Day = 1 ) AND (ClassNumber IN (SELECT * FROM SCI))");
+      $query->execute();
+      $result = $query->get_result();
+      $row = mysqli_fetch_row($result);
+      $totalPop = $row[0];
+      echo "Sum: " . $sum;
+      echo "Total: " . $totalPop;
+      
+    } else {
+      echo "Error creating temporary table: " . $db->error;
+    }
+
+    //$query = $db->query("CREATE TEMPORARY TABLE SCI (select ClassNumber from Inside where BuildingID = (select BuildingID from Buildings where BuildingName = 'SCI III'))");
+    
+
 ?>
 
 <!DOCTYPE html>
@@ -66,7 +94,9 @@
       <button type="submit" value="Submit">Submit</button>
     </form>
 
-
+    <span id ="TotalEnrolled_SCI3" value=<?php echo $sum; ?>> 
+    <span id ="TotalPop_SCI3" value=<?php echo $totalPop; ?>>
+    
 
     <script src="js/geo.js"></script>
   </body>
