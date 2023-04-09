@@ -131,8 +131,8 @@
       </div>
     </form>
 
-    <span id ="TotalEnrolled_SCI3" value=<?php echo $sum; ?>> 
-    <span id ="TotalPop_SCI3" value=<?php echo $max_day_pop; ?>>
+    <span id ="TotalEnrolled_SCI3" data-value=<?php echo $sum; ?>> 
+    <span id ="TotalPop_SCI3" data-value=<?php echo $max_day_pop; ?>>
     
 
     <script src="js/geo.js"></script>

@@ -34,22 +34,17 @@ function initMap() {
     map.panTo(csub);
   })
   
-  var enrolled_sci3 = document.getElementById("TotalEnrolled_SCI3");
-  var total_sci3 = document.getElementById("TotalPop_SCI3");
+  var enrolled_sci3 = document.getElementById("TotalEnrolled_SCI3").getAttribute("data-value");
+  var total_sci3 = document.getElementById("TotalPop_SCI3").getAttribute("data-value");
 
   console.log(total_sci3);
-  
+  console.log(enrolled_sci3);
 
-  //enrolled_sci3 = parseInt(enrolled_sci3.value)
-  //total_sci3 = parseInt(total_sci3.value)
-
-  // sci_3.value 
 
   // Find Max amount of pop at a certain time. Set that as the max weight 
 
   var sci3Coords = [
-    {location: new google.maps.LatLng(35.3451703, -119.1016499), weight: total_sci3.value}, // Max SetPoint
-    //{location: new google.maps.LatLng(35.3451703, -119.1016499), weight: 800},
+    {location: new google.maps.LatLng(35.3451703, 119.1016499), weight: total_sci3}, // MaxPop
     {location: new google.maps.LatLng(35.34905, -119.103735), weight: enrolled_sci3} // SCI III
 
   ];
@@ -62,7 +57,7 @@ function initMap() {
     'rgba(243,144,63, 1)',
     'rgba(237,104,60, 1)',
     'rgba(233,62,58, 1)',
-    'rgba(233,62,58, 0)'
+    'rgba(233,62,58,  0)'
   ];
 
 
