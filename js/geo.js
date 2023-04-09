@@ -1,11 +1,10 @@
-
 function initMap() {
   // The location of Csub
   const csub = { lat: 35.3503, lng: -119.1025 };
   // The map, centered at csub
   const map = new google.maps.Map(document.getElementById("map"), {
     zoom: 15,
-    center: csub,
+    center: csub
   });
   // The marker, positioned at csub
   const marker = new google.maps.Marker({
@@ -38,31 +37,41 @@ function initMap() {
   var enrolled_sci3 = document.getElementById("TotalEnrolled_SCI3");
   var total_sci3 = document.getElementById("TotalPop_SCI3");
 
+  console.log(total_sci3);
+  
+
   //enrolled_sci3 = parseInt(enrolled_sci3.value)
   //total_sci3 = parseInt(total_sci3.value)
 
   // sci_3.value 
 
-  var heatmapCoords = [
-    {location: new google.maps.LatLng(35.3451703, -119.1016499), weight: 1090},
-    {location: new google.maps.LatLng(35.34905, -119.103735), weight: 36} // SCI III
+  // Find Max amount of pop at a certain time. Set that as the max weight 
+
+  var sci3Coords = [
+    {location: new google.maps.LatLng(35.3451703, -119.1016499), weight: total_sci3.value}, // Max SetPoint
+    //{location: new google.maps.LatLng(35.3451703, -119.1016499), weight: 800},
+    {location: new google.maps.LatLng(35.34905, -119.103735), weight: enrolled_sci3} // SCI III
+
   ];
+
 
   var heatmapColors = [
-    'rgba(0, 0, 0, 0)',
-    'rgba(255,243,59, 0.1)',
-    'rgba(253,199,12, 0.3)',
-    'rgba(243,144,63, 0.5)',
-    'rgba(237,104,60, 0.8)',
-    'rgba(233,62,58, 1)'
+    'rgba(0,0,0,0)',
+    'rgba(255,243,59, 1)',
+    'rgba(253,199,12, 1)',
+    'rgba(243,144,63, 1)',
+    'rgba(237,104,60, 1)',
+    'rgba(233,62,58, 1)',
+    'rgba(233,62,58, 0)'
   ];
 
+
   var heatmap = new google.maps.visualization.HeatmapLayer({
-    data: heatmapCoords,
+    data: sci3Coords,
     map: map,
     radius: 50,
     gradient: heatmapColors,
-    maxIntensity: 1090
+    //maxIntensity: 1090
     //total_sci3.value
   });
 
@@ -73,10 +82,19 @@ window.initMap = initMap;
 
 var slider = document.getElementById("myRange");
 var value = document.getElementById("f");
-value.innerHTML = slider.value;
+
 
 // Update the current slider value (each time you drag the slider handle)
 slider.oninput = function() {
-  value.innerHTML = this.value;
+  // Shows time in standard time.
+
+  if(this.value > 12) {
+    value.innerHTML = this.value - 12;
+    value.innerHTML = value.innerHTML + ":00 pm" ;
+  } 
+  else {
+    value.innerHTML = this.value;
+    value.innerHTML = value.innerHTML + ":00 am" ;
+  }
 }
 

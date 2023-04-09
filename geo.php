@@ -23,37 +23,70 @@
     }
 
     $time = NULL;
+    $sliderTime = 5;
 
     if (isset($_POST) && !empty($_POST)) { 
         if (isset($_POST['myRange']) && !empty($_POST['myRange'])) {
             $time = $_POST['myRange'];
+            $sliderTime = $time;
             $time = strtotime($time . ':00:00');
             $time = date('H:i:s', $time);  // Date and Time are Different (can it be compared with date types instead of time types), putting single quotes solve it
             echo "Selected Time: " . $time;
         }
     }
+    
+    
+
     // Gets today's date in string form like "Monday", "Tuesday".
     $Day = date('l');
 
     $sum = NULL;
     $totalPop = NULL;
 
+
     if ($db->query("CREATE TEMPORARY TABLE SCI (select ClassNumber from Inside where BuildingID = (select BuildingID from Buildings where BuildingName = 'SCI III'))") === TRUE) {
-      // Grabs TotalEnrolled in the Building between a certain time
-      $query = $db->prepare("SELECT SUM(TotalEnrolled) FROM Classes WHERE ($Day = 1 ) AND (ClassNumber IN (SELECT * FROM SCI)) AND ('$time' >= StartTime) AND ('$time' <= EndTime)");
+      // Grabs TotalEnrolled in the Building between a certain time       //$Day goes here
+      $query = $db->prepare("SELECT SUM(TotalEnrolled) FROM Classes WHERE (Monday = 1 ) AND (ClassNumber IN (SELECT * FROM SCI)) AND ('$time' >= StartTime) AND ('$time' <= EndTime)");
       $query->execute();
       $result = $query->get_result();
       $row = mysqli_fetch_row($result);
       $sum = $row[0];
+      
+      if ($row[0] == "") {
+        $sum = 0;
+      }
 
-      // Query Grabs Total Enrolled in the Building
-      $query = $db->prepare("SELECT SUM(TotalEnrolled) FROM Classes WHERE ($Day = 1 ) AND (ClassNumber IN (SELECT * FROM SCI))");
-      $query->execute();
-      $result = $query->get_result();
-      $row = mysqli_fetch_row($result);
-      $totalPop = $row[0];
+      // Query Grabs Total Enrolled in the Building                       //$Day goes here
+      //$query = $db->prepare("SELECT SUM(TotalEnrolled) FROM Classes WHERE (Monday = 1 ) AND (ClassNumber IN (SELECT * FROM SCI))");
+      //$query->execute();
+      //$result = $query->get_result();
+      //$row = mysqli_fetch_row($result);
+      //$totalPop = $row[0];
+      //echo "Sum: " . $sum;
+      //echo "Total: " . $totalPop;
+
+      // Start of Day
+      $counter = 5;
+      $max_day_pop = 0;
+      $ctime = NULL;
+
+      // Finds pop at busiest hour
+      while($counter <=  21) {
+        $ctime = strtotime($counter . ':00:00');
+        $ctime = date('H:i:s', $ctime);                                     // $DAY GOES HERE LOL!!!
+        $query = $db->prepare("SELECT SUM(TotalEnrolled) FROM Classes WHERE (Monday = 1 ) AND (ClassNumber IN (SELECT * FROM SCI)) AND ('$ctime' >= StartTime) AND ('$ctime' <= EndTime)");
+        $query->execute();
+        $result = $query->get_result();
+        $row = mysqli_fetch_row($result);
+
+        if ($max_day_pop < $row[0]) {
+          $max_day_pop = $row[0];
+        }
+        $counter++;
+      }
+      echo "MaxPop: " . $max_day_pop;
       echo "Sum: " . $sum;
-      echo "Total: " . $totalPop;
+      
       
     } else {
       echo "Error creating temporary table: " . $db->error;
@@ -74,7 +107,9 @@
   </head>
   <body>
     <div id="map"></div>
-    <span id ="f" style="font-weight:bold;color:red">1</span> 
+    <div style="text-align:center; padding-top: 30px;">
+      <span id ="f" style="font-weight:bold;color:red">5:00 am</span> 
+    </div>
     
     
 
@@ -89,16 +124,19 @@
 
     <form method = "post" action="geo.php">
       <div class="slidecontainer">
-        <input type="range" min="5" max="21" value="5" class="slider" id="myRange" name="myRange">
-        </div>
-      <button type="submit" value="Submit">Submit</button>
+        <input type="range" min="5" max="21" value="<?php echo $sliderTime?>"  class="slider" id="myRange" name="myRange">
+      </div>
+      <div style="text-align:center; padding-top: 30px;">
+        <button type="submit" value="Submit">Submit</button>
+      </div>
     </form>
 
     <span id ="TotalEnrolled_SCI3" value=<?php echo $sum; ?>> 
-    <span id ="TotalPop_SCI3" value=<?php echo $totalPop; ?>>
+    <span id ="TotalPop_SCI3" value=<?php echo $max_day_pop; ?>>
     
 
     <script src="js/geo.js"></script>
+
   </body>
   
 </html>
