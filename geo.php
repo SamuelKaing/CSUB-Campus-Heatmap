@@ -40,60 +40,72 @@
     // Gets today's date in string form like "Monday", "Tuesday".
     $Day = date('l');
 
-    $sum = NULL;
-    $totalPop = NULL;
+    $sums = [];
+    $buildings = [];
+    $max_day_pop = [];
 
+    $query = $db->prepare("SELECT BuildingName FROM Buildings");
+    $query->execute();
+    $results = $query->get_result();
+    
+    // Creates an Array of all the buildings! (Dyanmic Code!)
+    while ($row = $results->fetch_assoc()) {
+      array_push($buildings, $row['BuildingName']);
+      array_push($max_day_pop, 0);
+    }
 
-    if ($db->query("CREATE TEMPORARY TABLE SCI (select ClassNumber from Inside where BuildingID = (select BuildingID from Buildings where BuildingName = 'SCI III'))") === TRUE) {
-      // Grabs TotalEnrolled in the Building between a certain time       //$Day goes here
-      $query = $db->prepare("SELECT SUM(TotalEnrolled) FROM Classes WHERE (Monday = 1 ) AND (ClassNumber IN (SELECT * FROM SCI)) AND ('$time' >= StartTime) AND ('$time' <= EndTime)");
+    for($i = 0; $i < count($buildings); $i++) {
+      $query = $db->prepare("DROP TEMPORARY TABLE IF EXISTS building_classes");
       $query->execute();
-      $result = $query->get_result();
-      $row = mysqli_fetch_row($result);
-      $sum = $row[0];
-      
-      if ($row[0] == "") {
-        $sum = 0;
-      }
-
-      // Query Grabs Total Enrolled in the Building                       //$Day goes here
-      //$query = $db->prepare("SELECT SUM(TotalEnrolled) FROM Classes WHERE (Monday = 1 ) AND (ClassNumber IN (SELECT * FROM SCI))");
-      //$query->execute();
-      //$result = $query->get_result();
-      //$row = mysqli_fetch_row($result);
-      //$totalPop = $row[0];
-      //echo "Sum: " . $sum;
-      //echo "Total: " . $totalPop;
-
-      // Start of Day
-      $counter = 5;
-      $max_day_pop = 0;
-      $ctime = NULL;
-
-      // Finds pop at busiest hour
-      while($counter <=  21) {
-        $ctime = strtotime($counter . ':00:00');
-        $ctime = date('H:i:s', $ctime);                                     // $DAY GOES HERE LOL!!!
-        $query = $db->prepare("SELECT SUM(TotalEnrolled) FROM Classes WHERE (Monday = 1 ) AND (ClassNumber IN (SELECT * FROM SCI)) AND ('$ctime' >= StartTime) AND ('$ctime' <= EndTime)");
+      // Temp table that holds all the classes in a building
+      if ($db->query("CREATE TEMPORARY TABLE building_classes (select ClassNumber from Inside where BuildingID = (select BuildingID from Buildings where BuildingName = '$buildings[$i]'))") === TRUE) {
+        // Grabs TotalEnrolled in the Building between a certain time       //$Day goes here
+        $query = $db->prepare("SELECT SUM(TotalEnrolled) FROM Classes WHERE (Monday = 1 ) AND (ClassNumber IN (SELECT * FROM building_classes)) AND ('$time' >= StartTime) AND ('$time' <= EndTime)");
         $query->execute();
         $result = $query->get_result();
         $row = mysqli_fetch_row($result);
 
-        if ($max_day_pop < $row[0]) {
-          $max_day_pop = $row[0];
+        if ($row[0] == "") {
+          array_push($sums, 0);
         }
-        $counter++;
+        else {
+          array_push($sums, $row[0]);
+        }
+
+        // Start of Day
+        $counter = 5;
+        $ctime = NULL;
+
+        // Finds pop at busiest hour
+        while($counter <=  21) {
+          $ctime = strtotime($counter . ':00:00');
+          $ctime = date('H:i:s', $ctime);                                     // $DAY GOES HERE LOL!!!
+          $query = $db->prepare("SELECT SUM(TotalEnrolled) FROM Classes WHERE (Monday = 1 ) AND (ClassNumber IN (SELECT * FROM building_classes)) AND ('$ctime' >= StartTime) AND ('$ctime' <= EndTime)");
+          $query->execute();
+          $result = $query->get_result();
+          $row = mysqli_fetch_row($result);
+
+          if ($max_day_pop[$i] < $row[0]) {
+            $max_day_pop[$i] = $row[0];
+          }
+          $counter++;
+        }
+        echo "MaxPop: " . $max_day_pop[$i];
+        echo "Sum: " . $sums[$i];
+
+
+
+      } else {
+        echo "Error creating temporary table: " . $db->error;
       }
-      echo "MaxPop: " . $max_day_pop;
-      echo "Sum: " . $sum;
-      
-      
-    } else {
-      echo "Error creating temporary table: " . $db->error;
     }
 
-    //$query = $db->query("CREATE TEMPORARY TABLE SCI (select ClassNumber from Inside where BuildingID = (select BuildingID from Buildings where BuildingName = 'SCI III'))");
-    
+    //$sums = [];
+    //$max_day_pop = [];
+
+    $json_sums = json_encode($sums);
+    $json_max_day_pop = json_encode($max_day_pop);
+    $json_buildings = json_encode($buildings);
 
 ?>
 
@@ -131,11 +143,17 @@
       </div>
     </form>
 
-    <span id ="TotalEnrolled_SCI3" data-value=<?php echo $sum; ?>> 
-    <span id ="TotalPop_SCI3" data-value=<?php echo $max_day_pop; ?>>
+    <!--<span id ="CurrentPop" data-value=<?php // echo $sums; ?>> -->
+    <!--<span id ="MaxPop" data-value=<?php // echo $max_day_pop; ?>> -->
     
 
     <script src="js/geo.js"></script>
+    <script> 
+      var sums = <?php echo $json_sums; ?>;
+      var max_day_pop = <?php echo $json_max_day_pop; ?>;
+      var buildings = <?php echo $json_buildings; ?>;
+      getArray(sums, max_day_pop, buildings);
+    </script>
 
   </body>
   
