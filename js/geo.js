@@ -90,14 +90,12 @@ function initMap() {
 
 window.initMap = initMap;
 
-var slider = document.getElementById("myRange");
-var value = document.getElementById("f");
-
+var slider = document.getElementById("my_range");
+var value = document.getElementById("time_display");
 
 // Update the current slider value (each time you drag the slider handle)
 slider.oninput = function() {
-  // Shows time in standard time.
-
+  // Shows slider value in standard time
   if(this.value > 12) {
     value.innerHTML = this.value - 12;
     value.innerHTML = value.innerHTML + ":00 pm" ;

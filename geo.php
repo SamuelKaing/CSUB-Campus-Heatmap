@@ -23,12 +23,12 @@
     }
 
     $time = NULL;
-    $sliderTime = 5;
+    $slider_time = 5;
 
     if (isset($_POST) && !empty($_POST)) { 
-        if (isset($_POST['myRange']) && !empty($_POST['myRange'])) {
-            $time = $_POST['myRange'];
-            $sliderTime = $time;
+        if (isset($_POST['my_range']) && !empty($_POST['my_range'])) {
+            $time = $_POST['my_range'];
+            $slider_time = $time;
             $time = strtotime($time . ':00:00');
             $time = date('H:i:s', $time);  // Date and Time are Different (can it be compared with date types instead of time types), putting single quotes solve it
             echo "Selected Time: " . $time;
@@ -100,12 +100,20 @@
       }
     }
 
-    //$sums = [];
-    //$max_day_pop = [];
-
     $json_sums = json_encode($sums);
     $json_max_day_pop = json_encode($max_day_pop);
     $json_buildings = json_encode($buildings);
+  
+  // Maintains correct slider time on page load
+  function time_conversion($slider_time) {
+    $std_time = NULL;
+    if ($slider_time > 12) {
+      $std_time = $slider_time - 12;
+      echo $std_time . ":00 pm";
+    } else {
+      echo $slider_time . ":00 am";
+    }
+  }
 
 ?>
 
@@ -120,9 +128,8 @@
   <body>
     <div id="map"></div>
     <div style="text-align:center; padding-top: 30px;">
-      <span id ="f" style="font-weight:bold;color:red">5:00 am</span> 
+      <span id ="time_display" style="font-weight:bold;color:red"><?php time_conversion($slider_time)?></span> 
     </div>
-    
     
 
     <script defer
@@ -136,7 +143,7 @@
 
     <form method = "post" action="geo.php">
       <div class="slidecontainer">
-        <input type="range" min="5" max="21" value="<?php echo $sliderTime?>"  class="slider" id="myRange" name="myRange">
+        <input type="range" min="5" max="21" value="<?php echo $slider_time?>" class="slider" id="my_range" name="my_range">
       </div>
       <div style="text-align:center; padding-top: 30px;">
         <button type="submit" value="Submit">Submit</button>
