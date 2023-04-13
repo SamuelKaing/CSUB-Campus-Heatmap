@@ -1,3 +1,13 @@
+var sums = [];
+var max_day_pop = [];
+var buildings = [];
+
+function getArray(json_sums, json_max_day_pop, json_buildings) {
+  sums = JSON.parse(json_sums);
+  max_day_pop = JSON.parse(json_max_day_pop);
+  buildings = JSON.parse(json_buildings);
+}
+
 function initMap() {
   // The location of Csub
   const csub = { lat: 35.3503, lng: -119.1025 };
@@ -34,25 +44,27 @@ function initMap() {
     map.panTo(csub);
   })
   
-  var enrolled_sci3 = document.getElementById("TotalEnrolled_SCI3");
-  var total_sci3 = document.getElementById("TotalPop_SCI3");
+  //var enrolled_sci3 = document.getElementById("CurrentPop").getAttribute("data-value");
+  //var total_sci3 = document.getElementById("MaxPop").getAttribute("data-value");
 
-  console.log(total_sci3);
-  
+  //console.log(total_sci3);
+  //console.log(enrolled_sci3);
 
-  //enrolled_sci3 = parseInt(enrolled_sci3.value)
-  //total_sci3 = parseInt(total_sci3.value)
-
-  // sci_3.value 
 
   // Find Max amount of pop at a certain time. Set that as the max weight 
 
+
+  console.log(sums);
+  console.log(max_day_pop);
+  console.log(buildings);
+
+
   var sci3Coords = [
-    {location: new google.maps.LatLng(35.3451703, -119.1016499), weight: total_sci3.value}, // Max SetPoint
-    //{location: new google.maps.LatLng(35.3451703, -119.1016499), weight: 800},
-    {location: new google.maps.LatLng(35.34905, -119.103735), weight: enrolled_sci3} // SCI III
+    {location: new google.maps.LatLng(35.3451703, 119.1016499), weight: 10}, // MaxPop
+    {location: new google.maps.LatLng(35.34905, -119.103735), weight: 5} // SCI III
 
   ];
+
 
 
   var heatmapColors = [
@@ -62,7 +74,7 @@ function initMap() {
     'rgba(243,144,63, 1)',
     'rgba(237,104,60, 1)',
     'rgba(233,62,58, 1)',
-    'rgba(233,62,58, 0)'
+    'rgba(233,62,58,  0)'
   ];
 
 
@@ -71,8 +83,6 @@ function initMap() {
     map: map,
     radius: 50,
     gradient: heatmapColors,
-    //maxIntensity: 1090
-    //total_sci3.value
   });
 
   
@@ -80,14 +90,12 @@ function initMap() {
 
 window.initMap = initMap;
 
-var slider = document.getElementById("myRange");
-var value = document.getElementById("f");
-
+var slider = document.getElementById("my_range");
+var value = document.getElementById("time_display");
 
 // Update the current slider value (each time you drag the slider handle)
 slider.oninput = function() {
-  // Shows time in standard time.
-
+  // Shows slider value in standard time
   if(this.value > 12) {
     value.innerHTML = this.value - 12;
     value.innerHTML = value.innerHTML + ":00 pm" ;
