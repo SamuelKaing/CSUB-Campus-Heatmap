@@ -9,11 +9,11 @@ import pandas as pd
 
 #dataset = str(input("File to clean: "))
 #df = pd.read_csv(dataset)
-df = pd.read_csv('classes_unclean.csv')
+df = pd.read_csv('uncleaned_classes.csv')
 
 # Define unwanted columns
 unwanted = ['Term', 'Session', 'Acad Group', 'Subject', 'Course Number', 'Section', 'Min Units', 'Max Units', 'Enrl Stat', 'Cap Enrl', 
-            'Req Rm Cap', 'Wait Cap', 'Wait Tot', 'Auto Enrol', 'Start', 'End', 'Room', 'Course Title', 'Instructor Name', 'Room Char', 'Mode']
+            'Req Rm Cap', 'Wait Cap', 'Wait Tot', 'Auto Enrol', 'Start', 'End', 'Pat', 'Room', 'Course Title', 'Instructor Name', 'Room Char', 'Mode', 'Email']
 
 # Drop unwanted columns
 for column in unwanted:
@@ -25,6 +25,8 @@ df = df.drop(columns=['Class Stat'])        # column not needed anymore
 df = df[df['Building'] != 'WEB']
 df = df[df['Building'] != 'OFFCMP']
 df = df[df['Building'] != '']
+df = df[df['Building'] != 'CSUB-AV']
+df = df[df['Building'] != 'AVC']
 df = df.dropna(subset=['Building'])
 df = df.drop_duplicates()
 
