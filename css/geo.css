@@ -1,6 +1,14 @@
 #map {
   height: 80%;
+  width: 80%;
+  margin: auto;
 }
+
+.gm-style {
+  padding: 50px;
+  margin: 10 10px;
+}
+
 /* 
   Fills entire Screen with Map. (Can Change Later) 
 */
@@ -9,11 +17,13 @@
     height: 100%;
     margin: 0;
     padding: 0;
+    font-family: Verdana, sans-serif;
   }
   
   .slidecontainer {
-    width: 100%; /* Width of the outside container */
-    padding-top: 20px;
+    width: 80%; /* Width of the outside container */
+    padding: 20px 20px;
+    margin: auto;
   }
   
   /* The slider itself */
