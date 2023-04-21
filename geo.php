@@ -23,6 +23,7 @@
     }
 
     $time = NULL;
+    $day_selected = "";
     $slider_time = 5;
 
     if (isset($_POST) && !empty($_POST)) { 
@@ -33,12 +34,16 @@
             $time = date('H:i:s', $time);  // Date and Time are Different (can it be compared with date types instead of time types), putting single quotes solve it
             echo "Selected Time: " . $time;
         }
+        if (isset($_POST['day']) && !empty($_POST['day'])) {
+          // save day to variable
+          $day_selected = $_POST['day'];
+        }
     }
     
     
 
     // Gets today's date in string form like "Monday", "Tuesday".
-    $Day = date('l');
+    $day = date('l', strtotime($day_selected));
 
     $sums = [];
     $buildings = [];
@@ -59,8 +64,8 @@
       $query->execute();
       // Temp table that holds all the classes in a building
       if ($db->query("CREATE TEMPORARY TABLE building_classes (select ClassNumber from Inside where BuildingID = (select BuildingID from Buildings where BuildingName = '$buildings[$i]'))") === TRUE) {
-        // Grabs TotalEnrolled in the Building between a certain time       //$Day goes here
-        $query = $db->prepare("SELECT SUM(TotalEnrolled) FROM Classes WHERE (Monday = 1 ) AND (ClassNumber IN (SELECT * FROM building_classes)) AND ('$time' >= StartTime) AND ('$time' <= EndTime)");
+        // Grabs TotalEnrolled in the Building between a certain time
+        $query = $db->prepare("SELECT SUM(TotalEnrolled) FROM Classes WHERE ($day = 1 ) AND (ClassNumber IN (SELECT * FROM building_classes)) AND ('$time' >= StartTime) AND ('$time' <= EndTime)");
         $query->execute();
         $result = $query->get_result();
         $row = mysqli_fetch_row($result);
@@ -79,8 +84,8 @@
         // Finds pop at busiest hour
         while($counter <=  21) {
           $ctime = strtotime($counter . ':00:00');
-          $ctime = date('H:i:s', $ctime);                                     // $DAY GOES HERE LOL!!!
-          $query = $db->prepare("SELECT SUM(TotalEnrolled) FROM Classes WHERE (Monday = 1 ) AND (ClassNumber IN (SELECT * FROM building_classes)) AND ('$ctime' >= StartTime) AND ('$ctime' <= EndTime)");
+          $ctime = date('H:i:s', $ctime);
+          $query = $db->prepare("SELECT SUM(TotalEnrolled) FROM Classes WHERE ($day = 1 ) AND (ClassNumber IN (SELECT * FROM building_classes)) AND ('$ctime' >= StartTime) AND ('$ctime' <= EndTime)");
           $query->execute();
           $result = $query->get_result();
           $row = mysqli_fetch_row($result);
@@ -126,7 +131,8 @@
     <title>Home</title>
   </head>
   <body>
-    <div id="map"></div>
+    <div id="map" style="padding: 40px;"></div>
+
     <div style="text-align:center; padding-top: 30px;">
       <span id ="time_display" style="font-weight:bold;color:red"><?php time_conversion($slider_time)?></span> 
     </div>
@@ -142,10 +148,20 @@
 
 
     <form method = "post" action="geo.php">
+      <div class="daycontainer" style="padding: 0 10%;">
+      <label for="day">Choose a day:</label>
+      <select id="day" name="day">
+        <option value="Monday" <?php if ($day_selected == 'Monday') echo 'selected' ?>>Monday</option>
+        <option value="Tuesday" <?php if ($day_selected == 'Tuesday') echo 'selected' ?>>Tuesday</option>
+        <option value="Wednesday" <?php if ($day_selected == 'Wednesday') echo 'selected' ?>>Wednesday</option>
+        <option value="Thursday" <?php if ($day_selected == 'Thursday') echo 'selected' ?>>Thursday</option>
+        <option value="Friday" <?php if ($day_selected == 'Friday') echo 'selected' ?>>Friday</option>
+      </select>
+      </div>
       <div class="slidecontainer">
         <input type="range" min="5" max="21" value="<?php echo $slider_time?>" class="slider" id="my_range" name="my_range">
       </div>
-      <div style="text-align:center; padding-top: 30px;">
+      <div style="text-align:center; padding: 10px 0px;">
         <button type="submit" value="Submit">Submit</button>
       </div>
     </form>
