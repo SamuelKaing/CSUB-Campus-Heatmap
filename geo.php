@@ -59,7 +59,7 @@
       array_push($max_day_pop, 0);
     }
 
-    for($i = 0; $i < count($buildings); $i++) {
+    /*for($i = 0; $i < count($buildings); $i++) {
       $query = $db->prepare("DROP TEMPORARY TABLE IF EXISTS building_classes");
       $query->execute();
       // Temp table that holds all the classes in a building
@@ -103,7 +103,7 @@
       } else {
         echo "Error creating temporary table: " . $db->error;
       }
-    }
+    }*/
 
     $json_sums = json_encode($sums);
     $json_max_day_pop = json_encode($max_day_pop);
@@ -179,5 +179,66 @@
     </script>
 
   </body>
+
+
+
+  <div class="pop">
+    <?php
+      echo "<table border='1' width='400' cellspacing'1'>";
+      for($i = 0; $i < count($buildings); $i++) {
+        $query = $db->prepare("DROP TEMPORARY TABLE IF EXISTS building_classes");
+        $query->execute();
+        // Temp table that holds all the classes in a building
+        if ($db->query("CREATE TEMPORARY TABLE building_classes (select ClassNumber from Inside where BuildingID = (select BuildingID from Buildings where BuildingName = '$buildings[$i]'))") === TRUE) {
+          // Grabs TotalEnrolled in the Building between a certain time
+          $query = $db->prepare("SELECT SUM(TotalEnrolled) FROM Classes WHERE ($day = 1 ) AND (ClassNumber IN (SELECT * FROM building_classes)) AND ('$time' >= StartTime) AND ('$time' <= EndTime)");
+          $query->execute();
+          $result = $query->get_result();
+          $row = mysqli_fetch_row($result);
+        
+          if ($row[0] == "") {
+            array_push($sums, 0);
+          }
+          else {
+            array_push($sums, $row[0]);
+          }
+        
+          // Start of Day
+          $counter = 5;
+          $ctime = NULL;
+        
+          // Finds pop at busiest hour
+          while($counter <=  21) {
+            $ctime = strtotime($counter . ':00:00');
+            $ctime = date('H:i:s', $ctime);
+            $query = $db->prepare("SELECT SUM(TotalEnrolled) FROM Classes WHERE ($day = 1 ) AND (ClassNumber IN (SELECT * FROM building_classes)) AND ('$ctime' >= StartTime) AND ('$ctime' <= EndTime)");
+            $query->execute();
+            $result = $query->get_result();
+            $row = mysqli_fetch_row($result);
+          
+            if ($max_day_pop[$i] < $row[0]) {
+              $max_day_pop[$i] = $row[0];
+            }
+            $counter++;
+          }
+            echo "<tr>";
+              echo "<td style'color: blue; margin: auto'>" . $buildings[$i] . "</td>";
+              echo "<td>MaxPop: " . $max_day_pop[$i] . "</td>";
+              echo "<td>Sum: " . $sums[$i] . "</td>";
+              echo "<td>Percentage Full: " . round(($sums[$i]/$max_day_pop[$i])*100, 2) . "%</td>";
+            echo "</tr>";
+        
+        
+        
+        } else {
+          echo "Error creating temporary table: " . $db->error;
+        }
+      }
+      echo "</table>";
+    
+    
+    
+    ?>
+  </div>
   
 </html>
