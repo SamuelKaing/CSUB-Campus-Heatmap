@@ -32,7 +32,6 @@
             $slider_time = $time;
             $time = strtotime($time . ':00:00');
             $time = date('H:i:s', $time);  // Date and Time are Different (can it be compared with date types instead of time types), putting single quotes solve it
-            echo "Selected Time: " . $time;
         }
         if (isset($_POST['day']) && !empty($_POST['day'])) {
           // save day to variable
@@ -59,7 +58,8 @@
       array_push($max_day_pop, 0);
     }
 
-    /*for($i = 0; $i < count($buildings); $i++) {
+    
+    for($i = 0; $i < count($buildings); $i++) {
       $query = $db->prepare("DROP TEMPORARY TABLE IF EXISTS building_classes");
       $query->execute();
       // Temp table that holds all the classes in a building
@@ -95,15 +95,16 @@
           }
           $counter++;
         }
-        echo "MaxPop: " . $max_day_pop[$i];
-        echo "Sum: " . $sums[$i];
+        //echo "MaxPop: " . $max_day_pop[$i];
+        //echo "Sum: " . $sums[$i];
 
 
 
       } else {
         echo "Error creating temporary table: " . $db->error;
       }
-    }*/
+    }
+
 
     $json_sums = json_encode($sums);
     $json_max_day_pop = json_encode($max_day_pop);
@@ -131,8 +132,7 @@
     <title>Home</title>
   </head>
   <body>
-    <div id="map" style="padding: 40px;"></div>
-
+    <div id="map" style="padding: 40px;" ></div>
     <div style="text-align:center; padding-top: 30px;">
       <span id ="time_display" style="font-weight:bold;color:red"><?php time_conversion($slider_time)?></span> 
     </div>
@@ -180,8 +180,6 @@
 
   </body>
 
-
-
   <div class="pop">
     <?php
       echo "<table border='1' width='400' cellspacing'1'>";
@@ -225,7 +223,12 @@
               echo "<td style'color: blue; margin: auto'>" . $buildings[$i] . "</td>";
               echo "<td>MaxPop: " . $max_day_pop[$i] . "</td>";
               echo "<td>Sum: " . $sums[$i] . "</td>";
-              echo "<td>Percentage Full: " . round(($sums[$i]/$max_day_pop[$i])*100, 2) . "%</td>";
+              if ($max_day_pop[$i] != 0) {
+                echo "<td>Percentage Full: " . round(($sums[$i]/$max_day_pop[$i])*100, 2) . "%</td>";  
+              }
+              else {
+                echo "<td>Percentage Full: 0%";
+              }
             echo "</tr>";
         
         
