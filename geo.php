@@ -5,20 +5,21 @@
 
     $db = get_connection();
 
+    // Establish connection to mySQL Database
     function get_connection() {
-        static $connection;
+      static $connection;
         
-        if (!isset($connection)) {
-            // Connect to the database
-            $connection = mysqli_connect('localhost', 'vibeview', 
+      if (!isset($connection)) {
+        // Connect to the database
+        $connection = mysqli_connect('localhost', 'vibeview', 
                 'Dgum~7vayiw','vibeview') 
                 or die(mysqli_connect_error());
-        }
-        if ($connection === false) {
-            echo "Unable to connect to database<br/>";
-            echo mysqli_connect_error();
-        }
-      
+      }
+      if ($connection === false) {
+        echo "Unable to connect to database<br/>";
+        echo mysqli_connect_error();
+      }
+        
         return $connection;
     }
 
@@ -27,23 +28,20 @@
     $slider_time = 5;
 
     if (isset($_POST) && !empty($_POST)) { 
-        if (isset($_POST['my_range']) && !empty($_POST['my_range'])) {
-            $time = $_POST['my_range'];
-            $slider_time = $time;
-            $time = strtotime($time . ':00:00');
-            $time = date('H:i:s', $time);  // Date and Time are Different (can it be compared with date types instead of time types), putting single quotes solve it
-        }
-        if (isset($_POST['day']) && !empty($_POST['day'])) {
-          // save day to variable
-          $day_selected = $_POST['day'];
-        }
+      if (isset($_POST['my_range']) && !empty($_POST['my_range'])) {
+        $time = $_POST['my_range'];
+        $slider_time = $time;
+        $time = strtotime($time . ':00:00');
+        $time = date('H:i:s', $time);  // Date and Time are Different (can it be compared with date types instead of time types), putting single quotes solve it
+      }
+      if (isset($_POST['day']) && !empty($_POST['day'])) {
+        // save day to variable
+        $day_selected = $_POST['day'];
+      }
     }
     
-    
-
     // Gets today's date in string form like "Monday", "Tuesday".
     $day = date('l', strtotime($day_selected));
-
     $sums = [];
     $buildings = [];
     $max_day_pop = [];
@@ -52,13 +50,12 @@
     $query->execute();
     $results = $query->get_result();
     
-    // Creates an Array of all the buildings! (Dyanmic Code!)
+    // Creates an Array of all the buildings! (Dynamic Code!)
     while ($row = $results->fetch_assoc()) {
       array_push($buildings, $row['BuildingName']);
       array_push($max_day_pop, 0);
     }
 
-    
     for($i = 0; $i < count($buildings); $i++) {
       $query = $db->prepare("DROP TEMPORARY TABLE IF EXISTS building_classes");
       $query->execute();
@@ -81,7 +78,7 @@
         $counter = 5;
         $ctime = NULL;
 
-        // Finds pop at busiest hour
+        // Finds population at busiest hour
         while($counter <=  21) {
           $ctime = strtotime($counter . ':00:00');
           $ctime = date('H:i:s', $ctime);
@@ -97,8 +94,6 @@
         }
         //echo "MaxPop: " . $max_day_pop[$i];
         //echo "Sum: " . $sums[$i];
-
-
 
       } else {
         echo "Error creating temporary table: " . $db->error;
@@ -136,7 +131,6 @@
     <div style="text-align:center; padding-top: 30px;">
       <span id ="time_display" style="font-weight:bold;color:red"><?php time_conversion($slider_time)?></span> 
     </div>
-    
 
     <script defer
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAa4pcAIYxHl4-P_fM-25lQMJIn9kSQkFU&libraries=visualization&callback=initMap">
@@ -145,7 +139,6 @@
     <!--<button onclick="foo()">Test</button>
     <p id="coords"></p>
     -->
-
 
     <form method = "post" action="geo.php">
       <div class="daycontainer" style="padding: 0 10%;">
@@ -169,7 +162,6 @@
     <!--<span id ="CurrentPop" data-value=<?php // echo $sums; ?>> -->
     <!--<span id ="MaxPop" data-value=<?php // echo $max_day_pop; ?>> -->
     
-
     <script src="js/geo.js"></script>
     <script> 
       var sums = <?php echo $json_sums; ?>;
@@ -205,7 +197,7 @@
           $counter = 5;
           $ctime = NULL;
         
-          // Finds pop at busiest hour
+          // Finds population at busiest hour
           while($counter <=  21) {
             $ctime = strtotime($counter . ':00:00');
             $ctime = date('H:i:s', $ctime);
@@ -231,15 +223,11 @@
               }
             echo "</tr>";
         
-        
-        
         } else {
           echo "Error creating temporary table: " . $db->error;
         }
       }
       echo "</table>";
-    
-    
     
     ?>
   </div>
